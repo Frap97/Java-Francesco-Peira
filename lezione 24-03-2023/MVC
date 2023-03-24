@@ -1,4 +1,4 @@
-MODEL-VIEW-CONTROLLER
+MODEL-VIEW-CONTROLLER E SPRING
 
 Sono una convenzione di divisione del lavoro in 3 package per dividere le funzionalità e avere un progetto più ordinato. 
 Il model fornisce i metodi per accedere ai dati dell'applicazione (Persona, Lezioni, Iscritti, Corsi) => entità che vanno nel database.
@@ -6,6 +6,9 @@ La view si occupa dell'interazione con l'utente e visualizza i dati del model (p
 Il controller riceve comandi dalla view e dal model, ed è in grado di modificarli (ad esempio richiamo un metodo del model per effettuare una query).
 
 L'observer è pattern utilizzato come base per l'archittetura di un applicativo, modificando ad esempio il model, la view si modifica. (non utilizzato nel corso)
+
+
+NPM di Spring è Maven, gestore di pacchetti e librerie
 
 
 
