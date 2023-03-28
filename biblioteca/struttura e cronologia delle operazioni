@@ -1,0 +1,163 @@
+Libro: id, autore, titolo
+Utente: id, nome, cognome
+Prestito: inizio, fine
+
+Model: entità e classi
+Controller: metodi e interazioni, GET, POST, RESTAPI
+Repository: Query database
+Payload: connessioni extra database basate sui contenuti es. giorni di prestito (fine - inizio)
+
+
+Dipendenze: Web, JPA, SQL Driver(forse, vederemo se serve)
+
+CONNESSIONE AL DATABASE:
+
+server:
+    port: 8081
+spring:
+    datasource:
+        url: jdbc:mysql://localhost:3306/frap97?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
+        username: frap97
+        password: Frank1597!!
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+CREO CLASSI:
+package com.engim.biblioteca.model;
+
+public class Libro {
+    private int id;
+    private String titolo;
+    private String autore;
+
+    private Stato stato;
+
+    enum Stato {
+        DISPONIBILE, IN_PRESTITO
+    }
+
+    public Libro() {
+    }
+
+    public Libro(String titolo, String autore, Stato stato) {
+        this.titolo = titolo;
+        this.autore = autore;
+        this.stato = Stato.DISPONIBILE;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitolo() {
+        return titolo;
+    }
+
+    public void setTitolo(String titolo) {
+        this.titolo = titolo;
+    }
+
+    public String getAutore() {
+        return autore;
+    }
+
+    public void setAutore(String autore) {
+        this.autore = autore;
+    }
+
+    public Stato getStato() {
+        return stato;
+    }
+
+    public void setStato(Stato stato) {
+        this.stato = stato;
+    }
+
+}
+
+CREO ENTITA E IMPOSTO AUTOINCREMENTO:
+@Entity
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+
+
+QUERY: Spring si occupa di creare la query, findby è come se fosse SELECT * FROM id WHERE id= (int id)
+
+public interface LibroRepository extends CrudRepository<Libro, Integer> {
+    Libro findById(int id);
+    List<Libro> findByAutore(String autore);
+
+}
+
+GET PER CREARE UN LIBRO:
+
+@RestController
+public class BibliotecaController {
+    @GetMapping("/addLibro")
+    public String addLibro(@RequestParam(value = "titolo")
+                               String titolo,
+                           @RequestParam(value = "autore")
+                           String autore)
+    {
+Libro libro1 = new Libro (tito9lo, autore) ==> Modificato il costruttore, param. stato tolto.
+        return 'ok';
+    }
+}
+
+ISTANZA DEll'INTERFACCIA CON I METODI PER LE QUERY: (con i metodi che abbiamo impostato noi nell'interfaccia più alcuni predefiniti)
+  @Autowired
+    LibroRepository libroRepository;
+
+AGGIUNGO METODO NELL'INTERFACCIA:     List<Libro> findAll();
+
+RESTAPI PER STAMPARE TUTTI I LIBRI TRAMITE L'ISTANZA libroRepository:
+    @GetMapping("/getLibri")
+    public List<Libro> getLibri(){
+        return libroRepository.findAll();
+    }
+
+CREO CLASSE UTENTE: (vedi sopra attrubuti)
+UTENTEREPOSITORY E UTENTECONTROLLER con metodo ADDUTENTE:
+
+    @GetMapping("/addUtente")
+    public String addUtente(@RequestParam(value = "nome")
+                           String nome,
+                           @RequestParam(value = "cognome")
+                           String cognome)
+    {
+        Utente utente1 = new Utente(nome, cognome);
+        utenteRepository.save(utente1);
+        return "Utente aggiunto correttamente al database";
+    }
+
+
+CREO LA CLASSE PRESTITO (parte complicata) CHE METTE IN RELAZIONE L'ID UTENTE CON IL LIBRO PRESTATO TRAMITE MAGIA:
+
+@Entity
+public class Prestito {
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private int id;
+
+    private Date dataInizio;
+    private Date dataFine;
+    @ManyToOne
+    private Utente utente;
+    @ManyToOne
+    private Libro libro;
+
+    //costruttori, getter e setter
+}
+
+
